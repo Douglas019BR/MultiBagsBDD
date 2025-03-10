@@ -4,8 +4,8 @@ Feature: List Product Reviews
   Jhon wants to see the reviews of a product
 
   Scenario: Should show reviews of a product
-    Given Jhon is logged on the multibags application
-      | email    | o181804@g.unicamp.br |
-      | password | aA#123456789         |
+    Given user is logged on the multibags application
+      | email    | admin3@admin3.admin3 |
+      | password | admin3 |
     When he selects the option to see reviews from product "2"
     Then the product reviews should be shown with success
