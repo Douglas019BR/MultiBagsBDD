@@ -17,5 +17,7 @@ Feature: Product Reviews
     Given user is logged on the multibags application
       | email    | admin3@admin3.admin3 |
       | password | admin3 |
-    When he selects the option to delete a review from product "4"
+    When he selects the option to see reviews from product "4"
+    And get the reviewId
+    And he selects the option to delete a review from product "4"
     Then the product review should be deleted with success

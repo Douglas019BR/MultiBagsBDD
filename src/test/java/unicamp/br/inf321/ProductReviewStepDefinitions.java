@@ -2,6 +2,7 @@ package unicamp.br.inf321;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.restassured.path.json.JsonPath;
 import org.apache.http.HttpStatus;
 
 import java.util.Map;
@@ -42,11 +43,6 @@ public class ProductReviewStepDefinitions {
                 .assertThat()
                 .statusCode(HttpStatus.SC_CREATED)
                 .body(matchesJsonSchemaInClasspath("unicamp/br/inf321/ProductReviewJsonSchema.json"));
-        int reviewId = cucumberWorld.getResponse().then().log().all()
-                .body("id", not(blankOrNullString()))
-                .extract().body().jsonPath().getInt("id");
-        cucumberWorld.addToNotes("reviewId", reviewId);
-        System.out.println("Review ID: " + reviewId);
     }
 
     @When("he selects the option to delete a review from product {string}")
@@ -57,6 +53,20 @@ public class ProductReviewStepDefinitions {
         cucumberWorld.setResponse(cucumberWorld.getRequest()
                 .when().header("Authorization", "Bearer " + token)
                 .delete(requestUrl));
+    }
+
+    @When("get the reviewId")
+    public void getReviewId() {
+        int customerId = cucumberWorld.getFromNotes("customerId");
+        JsonPath response = cucumberWorld.getResponse().jsonPath();
+        for (Map<String, Object> review : response.getList("$", Map.class)) {
+            Map<String, Object> customer = (Map<String, Object>) review.get("customer");
+            if (customerId == (int) customer.get("id")) {
+                int reviewId = (int) review.get("id");
+                cucumberWorld.addToNotes("reviewId", reviewId);
+                break;
+            }
+        }
     }
 
     @Then("the product review should be deleted with success")
