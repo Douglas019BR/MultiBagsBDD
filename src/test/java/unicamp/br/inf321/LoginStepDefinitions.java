@@ -74,6 +74,10 @@ public class LoginStepDefinitions {
                 .extract().body().jsonPath().get("token");
         assertThat("should be a jwt token", isJWT(token), is(true));
         cucumberWorld.addToNotes("token", token);
+        int customerId = cucumberWorld.getResponse().then().log().all()
+                .body("id", not(blankOrNullString()))
+                .extract().body().jsonPath().get("id");
+        cucumberWorld.addToNotes("customerId", customerId);
     }
 
     @Given("^(?:[A-Za-z]+) is logged on the multibags application$")
