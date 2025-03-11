@@ -37,6 +37,23 @@ public class ProductReviewStepDefinitions {
                 .post(requestUrl));
     }
 
+    @When("he selects the option to update a review from product {string}")
+    public void heSelectsTheOptionToUpdateProductReviews(String productId, Map<String, String> table) {
+        int reviewId = cucumberWorld.getFromNotes("reviewId");
+        String requestUrl = ProductReviewUrl.replace("{id}", productId) + "/" + reviewId;
+        String token = cucumberWorld.getFromNotes("token");
+        Map<String, Object> body = Map.of(
+                "customerId", cucumberWorld.getFromNotes("customerId"),
+                "description", table.get("description"),
+                "language", table.get("language"),
+                "rating", table.get("rating")
+        );
+        cucumberWorld.setResponse(cucumberWorld.getRequest()
+                .when().header("Authorization", "Bearer " + token)
+                        .body(body)
+                .put(requestUrl));
+    }
+
     @Then("the product review should be created with success")
     public void shouldBeCreateReviewProductsWithSuccess() {
         cucumberWorld.getResponse().then().log().all()
@@ -76,4 +93,11 @@ public class ProductReviewStepDefinitions {
                 .statusCode(HttpStatus.SC_OK);
     }
 
+    @Then("the product review should be updated with success")
+    public void shouldBeUpdateReviewProductsWithSuccess() {
+        cucumberWorld.getResponse().then().log().all()
+                .assertThat()
+                .statusCode(HttpStatus.SC_OK)
+                .body(matchesJsonSchemaInClasspath("unicamp/br/inf321/ProductReviewJsonSchema.json"));
+    }
 }
