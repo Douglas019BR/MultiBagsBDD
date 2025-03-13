@@ -6,6 +6,13 @@ Feature: List Product Reviews
   Scenario: Should show reviews of a product
     Given user is logged on the multibags application
       | email    | admin3@admin3.admin3 |
-      | password | admin3 |
+      | password | admin3               |
     When he selects the option to see reviews from product "2"
     Then the product reviews should be shown with success
+
+  Scenario: Should not show reviews of a invalid product
+    Given user is logged on the multibags application
+      | email    | admin3@admin3.admin3 |
+      | password | admin3               |
+    When he selects the option to see reviews from product "666"
+    Then the product reviews should not be shown with success

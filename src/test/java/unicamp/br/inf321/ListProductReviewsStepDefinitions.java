@@ -5,6 +5,8 @@ import io.cucumber.java.en.When;
 import org.apache.http.HttpStatus;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 public class ListProductReviewsStepDefinitions {
     String ListProductReviewsUrl = "/api/v1/products/{id}/reviews";
@@ -30,5 +32,15 @@ public class ListProductReviewsStepDefinitions {
                 .assertThat()
                 .statusCode(HttpStatus.SC_OK)
                 .body(matchesJsonSchemaInClasspath("unicamp/br/inf321/ListProdutReviewsJsonSchema.json"));
+    }
+
+    @Then("the product reviews should not be shown with success")
+    public void shouldBeListReviewProductsWithoutSuccess() {
+        cucumberWorld.getResponse().then().log().all()
+                .assertThat()
+                .statusCode(HttpStatus.SC_NOT_FOUND)
+                .body(matchesJsonSchemaInClasspath("unicamp/br/inf321/ErrorJsonSchema.json"))
+                .body("error", is(equalTo("Not Found")))
+                .body("message", is(equalTo("Product id 666 does not exists")));
     }
 }

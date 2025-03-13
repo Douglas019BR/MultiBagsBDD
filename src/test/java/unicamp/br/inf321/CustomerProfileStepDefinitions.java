@@ -25,7 +25,7 @@ public class CustomerProfileStepDefinitions {
     }
 
     @Then("his profile should be shown with success")
-    public void hisProfileShouldBeShownWithSuccess() {
+    public void hisProfileShouldBeShowWithSuccess() {
         String email = cucumberWorld.getFromNotes("email");
         String customerId = cucumberWorld.getResponse().then().log().all().assertThat()
                 // validates status code

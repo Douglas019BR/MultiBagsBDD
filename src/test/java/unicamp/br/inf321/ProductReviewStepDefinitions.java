@@ -8,8 +8,8 @@ import org.apache.http.HttpStatus;
 import java.util.Map;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.blankOrNullString;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
 
 
 public class ProductReviewStepDefinitions {
@@ -62,6 +62,17 @@ public class ProductReviewStepDefinitions {
                 .body(matchesJsonSchemaInClasspath("unicamp/br/inf321/ProductReviewJsonSchema.json"));
     }
 
+    @Then("the product review should be return an error")
+    public void shouldNotCreateReviewWithProductAlreadyHadReview() {
+        cucumberWorld.getResponse().then().log().all()
+                .assertThat()
+                .statusCode(HttpStatus.SC_BAD_REQUEST)
+                .body(matchesJsonSchemaInClasspath("unicamp/br/inf321/ErrorJsonSchema.json"))
+                .body("message", is(equalTo("You have evaluated this product")))
+                .body("error", is(equalTo("Bad Request")));
+    }
+
+
     @When("he selects the option to delete a review from product {string}")
     public void heSelectsTheOptionToDeleteProductReviews(String productId) {
         int reviewId = cucumberWorld.getFromNotes("reviewId");
@@ -86,6 +97,11 @@ public class ProductReviewStepDefinitions {
         }
     }
 
+    @When("he get an invalid ReviewId")
+    public void getInvalidReviewId() {
+        cucumberWorld.addToNotes("reviewId", 66666);
+    }
+
     @Then("the product review should be deleted with success")
     public void shouldBeDeleteReviewProductsWithSuccess() {
         cucumberWorld.getResponse().then().log().all()
@@ -99,5 +115,15 @@ public class ProductReviewStepDefinitions {
                 .assertThat()
                 .statusCode(HttpStatus.SC_OK)
                 .body(matchesJsonSchemaInClasspath("unicamp/br/inf321/ProductReviewJsonSchema.json"));
+    }
+
+    @Then("the product review should get an error when delete")
+    public void shouldGetAnErrorWhenDeleteInvalidReview(){
+        cucumberWorld.getResponse().then().log().all()
+                .assertThat()
+                .statusCode(HttpStatus.SC_NOT_FOUND)
+                .body(matchesJsonSchemaInClasspath("unicamp/br/inf321/ErrorJsonSchema.json"))
+                .body("message", is(equalTo("Product review with id 66666 does not exist")))
+                .body("error", is(equalTo("Not Found")));
     }
 }
